@@ -1,4 +1,4 @@
-# BIR
+# BIR (Best Interpretable Rotation)
 The code has been written by Rebecca Marion and Adrien Bibal.
 
 ## Pre-requisites:
