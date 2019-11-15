@@ -75,9 +75,17 @@ eval.res.lambda <- do.call(rbind.data.frame, eval.res.lambda)
 best_lambda.index <- which.min(eval.res.lambda$avg_MSE)
 best_lambda.norm <- eval.res.lambda$lambda.norm[best_lambda.index]
 
+# Some elements of Fe can have a standard deviation (sd) equal to 0, which is an issue when scaling.
+# In ordre to solve the problem, the sd for these columns is set to 1.
+Fe.sd <- apply(Fe, 2, sd) # Check which columns have sd = 0
+zero.sd <- which(Fe.sd == 0)
+if (length(zero.sd) > 0){
+  Fe.sd[zero.sd] <- 1
+}
+
 # Compute BIR on the full dataset with the best lambda
 res <- RunBIR(X = scale(X, center=T, scale=F), 
-              Fe = scale(Fe, center=T, scale=T),
+              Fe = scale(Fe, center=T, scale=Fe.sd),
               lambda = best_lambda.norm)
 
 save(res, file = paste0(out.path, "result.RData"))
