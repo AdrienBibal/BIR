@@ -17,8 +17,19 @@ function.path <- "Functions/"
 source.files <- list.files(path = function.path, recursive = TRUE)
 invisible(sapply(source.files, function(x) source(file = paste0(function.path, x))))
 
-Fe <- read.csv(paste0(data.path, "dataset.csv"))
-X <- read.csv(paste0(data.path, "embedding.csv"), header=F)
+if (length(args) == 1) {
+  # Default files for Fe and X
+  Fe <- read.csv(paste0(data.path, "dataset.csv"))
+  X <- read.csv(paste0(data.path, "embedding.csv"), header=F)
+} else if (length(args) == 2) {
+  stop("You only provided one file as input.")
+} else if (length(args) == 3) {
+  # The order should be: embedding first and then the dataset used to explain the embedding
+  X <- args[1]
+  Fe <- args[2]
+} else {
+  stop("You provided too many inputs.")
+}
 
 lambda.vals <- seq(0.0001, 3.5, length = 10)
 # lambda.vals <- exp(seq(log(0.0001), log(3.5), length.out = 20))
