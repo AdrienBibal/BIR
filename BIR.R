@@ -11,7 +11,7 @@ library(GenSA) # simulated annealing
 #### File paths ####
 
 data.path <- "Datasets/"
-out.path <- "Results/"
+out.path <- "Results/result.RData"
 function.path <- "Functions/"
 
 source.files <- list.files(path = function.path, recursive = TRUE)
@@ -21,12 +21,13 @@ if (length(args) == 1) {
   # Default files for Fe and X
   Fe <- read.csv(paste0(data.path, "dataset.csv"))
   X <- read.csv(paste0(data.path, "embedding.csv"), header=F)
-} else if (length(args) == 2) {
-  stop("You only provided one file as input.")
-} else if (length(args) == 3) {
+} else if (length(args) < 4) {
+  stop("The number of inputs you provided is not enough. You should provide (in order) the path to the embedding, the path to the dataset for explaining the embedding and then the path to the output file.")
+} else if (length(args) == 4) {
   # The order should be: embedding first and then the dataset used to explain the embedding
-  X <- args[1]
-  Fe <- args[2]
+  X <- args[2]
+  Fe <- args[3]
+  out.path <- args[4]
 } else {
   stop("You provided too many inputs.")
 }
@@ -99,6 +100,4 @@ res <- RunBIR(X = scale(X, center=T, scale=F),
               Fe = scale(Fe, center=T, scale=Fe.sd),
               lambda = best_lambda.norm)
 
-save(res, file = paste0(out.path, "result.RData"))
-save(res, file = paste0(out.path, "result_v2.RData"), version = 2)
-
+save(res, file = out.path)
