@@ -14,10 +14,12 @@ data.path <- "Datasets/"
 out.path <- "Results/result.RData"
 function.path <- "Functions/"
 
+args <- commandArgs(TRUE)
+
 source.files <- list.files(path = function.path, recursive = TRUE)
 invisible(sapply(source.files, function(x) source(file = paste0(function.path, x))))
 
-if (length(args) == 1) {
+if (length(args) == 0) {
   # Default files for Fe and X
   Fe <- read.csv(paste0(data.path, "dataset.csv"))
   X <- read.csv(paste0(data.path, "embedding.csv"), header=F)
@@ -25,9 +27,9 @@ if (length(args) == 1) {
   stop("The number of inputs you provided is not enough. You should provide (in order) the path to the embedding, the path to the dataset for explaining the embedding and then the path to the output file.")
 } else if (length(args) == 4) {
   # The order should be: embedding first and then the dataset used to explain the embedding
-  X <- args[2]
-  Fe <- args[3]
-  out.path <- args[4]
+  X <- args[1]
+  Fe <- args[2]
+  out.path <- args[3]
 } else {
   stop("You provided too many inputs.")
 }
