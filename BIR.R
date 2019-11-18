@@ -21,13 +21,13 @@ invisible(sapply(source.files, function(x) source(file = paste0(function.path, x
 
 if (length(args) == 0) {
   # Default files for Fe and X
-  Fe <- read.csv(paste0(data.path, "dataset.csv"))
   X <- read.csv(paste0(data.path, "embedding.csv"), header=F)
+  Fe <- read.csv(paste0(data.path, "dataset.csv"))
 } else if (length(args) < 3) {
   stop("The number of inputs you provided is not enough. You should provide (in order) the path to the embedding, the path to the dataset for explaining the embedding and then the path to the output file.")
 } else if (length(args) == 3) {
   # The order should be: embedding first and then the dataset used to explain the embedding
-  X <- read.csv(args[1])
+  X <- read.csv(args[1], header=F)
   Fe <- read.csv(args[2])
   out.path <- args[3]
 } else {
