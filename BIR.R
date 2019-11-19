@@ -7,6 +7,7 @@ rm(list = ls())
 library(glmnet) # Lasso
 library(pbapply)
 library(GenSA) # simulated annealing
+library(coin) # Wilcoxon test
 
 #### File paths ####
 
@@ -34,7 +35,7 @@ if (length(args) == 0) {
   stop("You provided too many inputs.")
 }
 
-lambda.vals <- seq(0.0001, 3.5, length = 10)
+lambda.vals <- seq(0.0001, 10, length = 10)
 # lambda.vals <- exp(seq(log(0.0001), log(3.5), length.out = 20))
 
 
@@ -44,13 +45,10 @@ lambda.vals <- seq(0.0001, 3.5, length = 10)
 seed <- 155000
 set.seed(seed)
 
-eval.res.lambda <- c()
-lambda.vals.index = 0
-
 # Beware, running BIR takes (# lambdas)*(# folds)*(2 seconds)
 # In the current setup, this means 10*10*2 = 200 seconds = 3.3 minutes
-for (lambda in lambda.vals) {
-  lambda.vals.index <- lambda.vals.index + 1
+eval.res.lambda <- do.call(rbind, lapply(1:length(lambda.vals), function(lambda.vals.index) {
+  lambda <- lambda.vals[lambda.vals.index]
   K <- 10 # number of folds for K-fold cross-validation
   # Split data row indexes randomly into K folds
   fold.ids <- suppressWarnings(split(sample(nrow(Fe)), seq(1, nrow(Fe), length = K)))
@@ -75,20 +73,51 @@ for (lambda in lambda.vals) {
                 Fe.test = fold.data$Fe.test,
                 X.test = fold.data$X.test)
     
-    if (!is.na(tmp$MSE)) eval.res.K <- c(eval.res.K, tmp$MSE)
+    if (!is.na(tmp$MSE)) eval.res.K[[index.fold]] <- cbind.data.frame(lambda = lambda,
+                                                                      lambda.norm = lambda.norm,                                                                      (tmp))
   }
-  
-  
-  eval.res.lambda[[lambda.vals.index]] <- cbind.data.frame(lambda = lambda,
-                                                           lambda.norm = lambda.norm,
-                                                           avg_MSE = mean(eval.res.K))
-}
-eval.res.lambda <- do.call(rbind.data.frame, eval.res.lambda)
+  return(do.call(rbind.data.frame, eval.res.K))
+}))
+
+####################################
+#### Now Choose the best lambda ####
+####################################
 
 # Consider the lambda with the min avg_MSE
-best_lambda.index <- which.min(eval.res.lambda$avg_MSE)
-best_lambda.norm <- eval.res.lambda$lambda.norm[best_lambda.index]
+which.lambda.min.MSE <- which.min(sapply(1:length(lambda.vals), function(lambda.val) 
+                            mean(eval.res.lambda[, "MSE"][which(eval.res.lambda[, "lambda"] == lambda.vals[lambda.val])], na.rm = T)))
 
+results <- eval.res.lambda
+lambda.index <- which.lambda.min.MSE
+not.finished <- T
+test.index <- lambda.index + 1
+while(not.finished){
+  MSE1 <- results[which(results[, "lambda"] == lambda.vals[lambda.index]), 
+                  "MSE"]
+  MSE2 <- results[which(results[, "lambda"] == lambda.vals[test.index]),
+                  "MSE"]
+  if (sum(abs(MSE1) - abs(MSE2)) == 0){
+    pval <- 1
+  } else {
+    pval <- wilcox.exact(MSE1,
+                         MSE2,
+                         paired = T)$p.val
+  }
+  
+  if (pval < 0.05){
+    best.lambda.index <- test.index - 1
+    not.finished <- F
+  }
+  if (pval > 0.05 & test.index == length(lambda.vals)){
+    best.lambda.index <- test.index
+    not.finished <- F
+  }
+  test.index <- test.index + 1
+}
+
+###############################################################
+#### Now run BIR with the best lambda on the whole dataset ####
+###############################################################
 # Some elements of Fe can have a standard deviation (sd) equal to 0, which is an issue when scaling.
 # In ordre to solve the problem, the sd for these columns is set to 1.
 Fe.sd <- apply(Fe, 2, sd) # Check which columns have sd = 0
@@ -100,6 +129,6 @@ if (length(zero.sd) > 0){
 # Compute BIR on the full dataset with the best lambda
 res <- RunBIR(X = scale(X, center=T, scale=F), 
               Fe = scale(Fe, center=T, scale=Fe.sd),
-              lambda = best_lambda.norm)
+              lambda = lambda.vals[best.lambda.index]/sqrt(ncol(Fe)))
 
 save(res, file = out.path)
