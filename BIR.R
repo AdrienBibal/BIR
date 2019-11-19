@@ -36,11 +36,11 @@ if (length(args) == 0) {
   if (length(args) >= 3) {
     out.path <- args[3]
     if (length(args) >= 4) {
-      lambda.vals <- seq(args[4], 10, length = 10)
+      lambda.vals <- seq(as.numeric(args[4]), 10, length = 10)
       if (length(args) >= 5) {
-        lambda.vals <- seq(args[4], args[5], length = 10)
+        lambda.vals <- seq(as.numeric(args[4]), as.numeric(args[5]), length = 10)
         if (length(args) >= 6) {
-          lambda.vals <- seq(args[4], args[5], length = args[6])
+          lambda.vals <- seq(as.numeric(args[4]), as.numeric(args[5]), length = as.numeric(args[6]))
         } else {
             stop("You provided too many inputs.")
         }
