@@ -7,7 +7,7 @@ rm(list = ls())
 library(glmnet) # Lasso
 library(pbapply)
 library(GenSA) # simulated annealing
-library(coin) # Wilcoxon test
+library(exactRankTests) # Wilcoxon test
 
 #### File paths ####
 
