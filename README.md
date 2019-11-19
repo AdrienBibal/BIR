@@ -14,9 +14,9 @@ Columns = embedding dimensions; rows = instances. The first line of the file cor
 ## How to run BIR?
 In order to run BIR, execute all lines of BIR.R. Inputs (the embedding X and the features Fe for explaining it) should be located in the folder Datasets. The results will be provided in the folder called Results.
 
-If you want to run BIR as a script (with Rscript), you can either use no argument (in this case, dataset.csv and embedding.csv should be in the folder Datasets) or 3 arguments (the first one is the path to the embedding file, the second one is the path to the dataset used to exeplain the embedding and the third one is the path indicating where the results should be stored). 
+If you want to run BIR as a script (with Rscript), you can either use no argument (in this case, dataset.csv and embedding.csv should be in the folder Datasets) or more. If you use arguments, the two first arguments are mandatory: the first one is the path to the embedding file and the second one is the path to the dataset used to explain the embedding. The additional arguments must be in ordre, but are optional. The third argument is the path indicating where the results should be stored, the fourth one is the start of the range of lamdas, the fifth one is the end of the range and the sixth one is the number of lamndas that should be evaluated.
 
-Here is one example of use:<br> Rscript BIR.R a_path_to/my_embedding_file.csv another_path_to/my_dataset_file.csv an_output_path/output_file.RData
+Here is one example of use with the two first mandatory arguments and the first optinal one:<br> Rscript BIR.R a_path_to/my_embedding_file.csv another_path_to/my_dataset_file.csv an_output_path/output_file.RData
 
 ## How long does it take to run BIR?
 The selection of lambda should be perform before running BIR for the last time. As lambda is selected by 10-fold cross validation and the optimization is performed using simulated annealing, running BIR will take (number of lambdas to test) * (number of folds in the cross validation) * (number of seconds for simulated annealing). In the current implementation, this means 10 lambdas * 10 folds * 2 seconds.
