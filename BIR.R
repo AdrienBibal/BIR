@@ -50,6 +50,7 @@ if (length(args) == 0) {
 }
 
 #### Run BIR ####
+print("Selection of lambda in progress...")
 
 # Prepare fold ids
 seed <- 155000
@@ -94,8 +95,11 @@ eval.res.lambda <- do.call(rbind, lapply(1:length(lambda.vals), function(lambda.
 ####################################
 
 # Consider the lambda with the min avg_MSE
-which.lambda.min.MSE <- which.min(sapply(1:length(lambda.vals), function(lambda.val) 
-                            mean(eval.res.lambda[, "MSE"][which(eval.res.lambda[, "lambda"] == lambda.vals[lambda.val])], na.rm = T)))
+lambda.avg.MSE <- sapply(1:length(lambda.vals), function(lambda.val) 
+                         mean(eval.res.lambda[, "MSE"][which(eval.res.lambda[, "lambda"] == lambda.vals[lambda.val])], na.rm = T))
+which.lambda.min.MSE <- which.min(lambda.avg.MSE)
+
+print(rbind(lambda.vals, lambda.avg.MSE))
 
 results <- eval.res.lambda
 lambda.index <- which.lambda.min.MSE
@@ -125,6 +129,8 @@ while(not.finished){
   test.index <- test.index + 1
 }
 
+print(paste0("The lambda selected is ", lambda.vals[best.lambda.index], " at index ", best.lambda.index))
+
 ###############################################################
 #### Now run BIR with the best lambda on the whole dataset ####
 ###############################################################
@@ -142,3 +148,4 @@ res <- RunBIR(X = scale(X, center=T, scale=F),
               lambda = lambda.vals[best.lambda.index]/sqrt(ncol(Fe)))
 
 save(res, file = out.path)
+print(paste0("Results stored in ", out.path))
