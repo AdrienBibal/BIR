@@ -21,7 +21,7 @@ source.files <- list.files(path = function.path, recursive = TRUE)
 invisible(sapply(source.files, function(x) source(file = paste0(function.path, x))))
 
 # lambda.vals <- seq(0.0001, 10, length = 10)
-lambda.vals <- exp(seq(log(0.0001), log(3.5), length.out = 20))
+lambda.vals <- exp(seq(log(0.0001), log(3.5), length.out = 10))
 
 if (length(args) == 0) {
   # Default files for Fe and X
@@ -36,11 +36,11 @@ if (length(args) == 0) {
   if (length(args) >= 3) {
     out.path <- args[3]
     if (length(args) >= 4) {
-      lambda.vals <- seq(as.numeric(args[4]), 10, length = 10)
+      lambda.vals <- exp(seq(log(as.numeric(args[4])), log(3.5), length = 10))
       if (length(args) >= 5) {
-        lambda.vals <- seq(as.numeric(args[4]), as.numeric(args[5]), length = 10)
+        lambda.vals <- exp(seq(log(as.numeric(args[4])), log(as.numeric(args[5])), length = 10))
         if (length(args) >= 6) {
-          lambda.vals <- seq(as.numeric(args[4]), as.numeric(args[5]), length = as.numeric(args[6]))
+          lambda.vals <- exp(seq(log(as.numeric(args[4])), log(as.numeric(args[5])), length = as.numeric(args[6])))
         } else {
             stop("You provided too many inputs.")
         }
