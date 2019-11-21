@@ -129,7 +129,7 @@ while(not.finished){
   test.index <- test.index + 1
 }
 
-print(paste0("The lambda selected is ", lambda.vals[best.lambda.index], " at index ", best.lambda.index))
+print(paste0("The best lambda is ", lambda.vals[best.lambda.index], " at index ", best.lambda.index))
 
 ###############################################################
 #### Now run BIR with the best lambda on the whole dataset ####
