@@ -20,8 +20,8 @@ args <- commandArgs(TRUE)
 source.files <- list.files(path = function.path, recursive = TRUE)
 invisible(sapply(source.files, function(x) source(file = paste0(function.path, x))))
 
-lambda.vals <- seq(0.0001, 10, length = 10)
-# lambda.vals <- exp(seq(log(0.0001), log(3.5), length.out = 20))
+# lambda.vals <- seq(0.0001, 10, length = 10)
+lambda.vals <- exp(seq(log(0.0001), log(3.5), length.out = 20))
 
 if (length(args) == 0) {
   # Default files for Fe and X
