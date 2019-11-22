@@ -101,6 +101,8 @@ which.lambda.min.MSE <- which.min(lambda.avg.MSE)
 
 print(rbind(lambda.vals, lambda.avg.MSE))
 
+print(paste0("The lambda with the min avg MSE is ", lambda.vals[which.lambda.min.MSE], " at index ", which.lambda.min.MSE))
+
 results <- eval.res.lambda
 lambda.index <- which.lambda.min.MSE
 not.finished <- T
@@ -129,7 +131,7 @@ while(not.finished){
   test.index <- test.index + 1
 }
 
-print(paste0("The best lambda is ", lambda.vals[best.lambda.index], " at index ", best.lambda.index))
+print(paste0("The most sparse lambda not significantly different that the best lambda is ", lambda.vals[best.lambda.index], " at index ", best.lambda.index))
 
 ###############################################################
 #### Now run BIR with the best lambda on the whole dataset ####
